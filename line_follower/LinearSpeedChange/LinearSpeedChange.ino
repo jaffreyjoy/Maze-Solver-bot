@@ -8,6 +8,8 @@
 #define obsSensor 2
 
 int i=0;
+int j=50;
+int k = j - i;
 
 void setup() 
 {
@@ -28,7 +30,7 @@ void loop()
   
   MotorControl(1,1);
   
-  if(i>=100)
+  if(i>=50)
   {
     digitalWrite(El,HIGH);
     digitalWrite(Er,HIGH);
@@ -38,15 +40,16 @@ void loop()
   {
     digitalWrite(El,HIGH);
     digitalWrite(Er,HIGH);
-    delay(10);
+    delay(i);
   
     digitalWrite(El,LOW);
     digitalWrite(Er,LOW);
-    delay(40);
+    delay(k);
   }
   
   i++;
-  Serial.println(i);
+  k = j - i;
+  //Serial.println(i);
 }
 
 void MotorControl(int driveL,int driveR)
