@@ -30,13 +30,14 @@ void loop()
   
   MotorControl(1,1);
   
-  if(i>=50)
+  if(i>=50&&i<70)
   {
     digitalWrite(El,HIGH);
     digitalWrite(Er,HIGH);
+    i++;
   }
   
-  else
+  else if (i < 50)
   {
     digitalWrite(El,HIGH);
     digitalWrite(Er,HIGH);
@@ -45,10 +46,24 @@ void loop()
     digitalWrite(El,LOW);
     digitalWrite(Er,LOW);
     delay(k);
+    i++;
+    k = j - i;
+  }
+  else
+  {
+     digitalWrite(El,HIGH);
+     digitalWrite(Er,HIGH);
+     delay(i);
+  
+     digitalWrite(El,LOW);
+     digitalWrite(Er,LOW);
+     delay(k);
+
+     i--;
+     k = j - i;
   }
   
-  i++;
-  k = j - i;
+ 
   //Serial.println(i);
 }
 
