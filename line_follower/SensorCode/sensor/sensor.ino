@@ -1,3 +1,6 @@
+#define sen1 2
+#define sen2 3
+#define sen3 11
 #define Lp 7 //left pin of positive motor
 #define Ln 4 // left negative
 #define El 5 // Enable pin of left motor
@@ -5,50 +8,40 @@
 #define Rn 12 //pin no of right negative motor
 #define Er 6 //Enable pin of right motor. if it is 0 right motor is always off
 #define led 13
-#define obsSensor 2
 
-int i=0;
-
-void setup() 
-{
+void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  pinMode(obsSensor,INPUT);
+  pinMode(sen1,INPUT);
+  pinMode(sen2,INPUT);
+  pinMode(sen3,INPUT);
   pinMode(Lp,OUTPUT);
   pinMode(Ln,OUTPUT);
   pinMode(El,OUTPUT);
   pinMode(Er,OUTPUT);
   pinMode(Rp,OUTPUT);
   pinMode(Rn,OUTPUT);
-  pinMode(led,OUTPUT);
-}
-
-void loop() 
-{
-  
-  MotorControl(1,1);
   
   digitalWrite(El,HIGH);
   digitalWrite(Er,HIGH);
-  
-//  if(i>=100)
-//  {
-//    
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if(!digitalRead(sen1) || !digitalRead(sen2) || !digitalRead(sen3))
+    MotorControl(0,0);
+//  else if(digitalRead(sen2))
+//    MotorControl(0,0);
+//  else if(digitalRead(sen3))
+//    MotorControl(0,0);
 //  }
 //  
 //  else
 //  {
-//    digitalWrite(El,HIGH);
-//    digitalWrite(Er,HIGH);
-//    delay(10);
-//  
-//    digitalWrite(El,LOW);
-//    digitalWrite(Er,LOW);
-//    delay(40);
-//  }
-//  
-//  i++;
-//  Serial.println(i);
+//    digitalWrite(led,HIGH);
+  else
+    MotorControl(1,1); 
+//  }  
 }
 
 void MotorControl(int driveL,int driveR)
@@ -90,5 +83,3 @@ void MotorControl(int driveL,int driveR)
   }
   
 }
-
-
