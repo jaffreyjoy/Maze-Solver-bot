@@ -1,6 +1,8 @@
 #define sen1 2
 #define sen2 3
 #define sen3 11
+#define sen4 A0
+#define sen5 A1
 #define Lp 7 //left pin of positive motor
 #define Ln 4 // left negative
 #define El 5 // Enable pin of left motor
@@ -15,6 +17,8 @@ void setup() {
   pinMode(sen1,INPUT);
   pinMode(sen2,INPUT);
   pinMode(sen3,INPUT);
+  pinMode(sen4,INPUT);
+  pinMode(sen5,INPUT);
   pinMode(Lp,OUTPUT);
   pinMode(Ln,OUTPUT);
   pinMode(El,OUTPUT);
@@ -28,7 +32,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(!digitalRead(sen1) || !digitalRead(sen2) || !digitalRead(sen3))
+  if(!digitalRead(sen1) || !digitalRead(sen2) || !digitalRead(sen3) || !digitalRead(sen4) || !digitalRead(sen5))
     MotorControl(0,0);
 //  else if(digitalRead(sen2))
 //    MotorControl(0,0);
