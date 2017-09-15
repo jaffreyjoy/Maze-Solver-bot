@@ -1,0 +1,431 @@
+// Linus the Line-bot
+
+// Follows a Black line on a White surface(poster-board and electrical type or the floor and tape).
+
+// Code by JDW 2010 - feel free to modify.
+
+// Modified by Gerardo Ramos March 11, 2014
+
+// My first arduino project, first electronic project
+
+#include <Wire.h>  // this includes the Afmotor library for the motor-controller
+
+#include <Adafruit_MotorShield.h>
+
+#include "utility/Adafruit_PWMServoDriver.h"
+
+ 
+
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+
+ 
+
+ 
+
+Adafruit_DCMotor *motor_left=AFMS.getMotor(1);  // attach motor_left to the Adafruitmotorshield M1
+
+Adafruit_DCMotor *motor_right=AFMS.getMotor(3);  // attach motor_right to the Adafruitmotorshield M3
+
+ 
+
+// Create variables for sensor readings
+
+int sensor1 = 0;
+
+int sensor2 = 0;
+
+int sensor3 = 0;
+
+int sensor4 = 0;
+
+int sensor5 = 0;
+
+ 
+
+// Create variables for adjusted readings
+
+int adj_1=0;
+
+int adj_2=0;
+
+int adj_3=0;
+
+int adj_4=0;
+
+int adj_5=0;
+
+ 
+
+// You can change the min/max values below to fine tune each sensor
+
+int s1_min=200;
+
+int s1_max=950;
+
+ 
+
+int s2_min=200;
+
+int s2_max=950;
+
+ 
+
+int s3_min=200;
+
+int s3_max=950;
+
+ 
+
+int s4_min=200;
+
+int s4_max=950;
+
+ 
+
+int s5_min=200;
+
+int s5_max=950;
+
+ 
+
+// This threshold defines when the sensor is reading the black line
+
+intlower_threshold=80;
+
+// Value to define a middle threshold(half of the total 255 value range)
+
+int threshold=110;
+
+// This threshold defines when the sensor is reading the white poster board or
+
+// the floor if you are testing it on the floor like I did.
+
+intupper_threshold=200;
+
+// This value sets the maximum speed of linus (max=255).
+
+// using a speed potentiometer will over-ride this setting.
+
+intspeed_value=220;
+
+// End of changeable variables
+
+ 
+
+void setup()
+
+{
+
+Serial.begin(9600);  // Start serial monitor to see sensor readings
+
+AFMS.begin();
+
+ 
+
+  // declare left motor
+
+motor_left->setSpeed(255);
+
+motor_left->run(RELEASE);
+
+ 
+
+  // declare right motor
+
+motor_right->setSpeed(255);
+
+motor_right->run(RELEASE);
+
+}
+
+ 
+
+voidupdate_sensors(){
+
+ 
+
+  // This will read sensor 1
+
+  sensor1=analogRead(0);
+
+  adj_1=map(sensor1,s1_min,s1_max,0,255);
+
+  adj_1=constrain(adj_1,0,255);
+
+ 
+
+  // This will read sensor 2
+
+  sensor2=analogRead(1);     // sensor 2 =left-center
+
+  adj_2=map(sensor2,s2_min,s2_max,0,255);
+
+  adj_2=constrain(adj_2,0,255);
+
+ 
+
+  // This will read sensor 3
+
+  sensor3=analogRead(2);   // sensor 3 =center
+
+  adj_3=map(sensor3,s3_min,s3_max,0,255);
+
+  adj_3=constrain(adj_3,0,255);
+
+ 
+
+  // This will read sensor 4
+
+  sensor4=analogRead(3);  // sensor 4 = right-center
+
+  adj_4=map(sensor4,s4_min,s4_max,0,255);
+
+  adj_4=constrain(adj_4,0,255);
+
+ 
+
+  // This will read sensor 5
+
+  sensor5=analogRead(4);   //sensor5 = right
+
+  adj_5=map(sensor5,s5_min,s5_max,0,255);
+
+  adj_5=constrain(adj_5,0,255);
+
+ 
+
+}
+
+ 
+
+void loop(){
+
+update_sensors();  // update the sensors
+
+ 
+
+  // First, check the value of the center sensor
+
+if (adj_3<lower_threshold){
+
+ 
+
+    // If center sensor value is below threshold, check surrounding sensors
+
+if (adj_2>threshold && adj_4>threshold){
+
+ 
+
+      // If all sensors check out(if statements are satisfied), drive forward
+
+motor_left->run(FORWARD);
+
+motor_left->setSpeed(speed_value);
+
+motor_right->run(FORWARD);
+
+motor_right->setSpeed(speed_value);
+
+    }
+
+    // You want the line bot to stop when it reaches the black box/
+
+else if (adj_1<30){
+
+if (adj_2<30){
+
+if (adj_3<30){
+
+if (adj_4<30){
+
+if (adj_5<30){
+
+ 
+
+              // Here all the sensors are reading black, so stop the bot.
+
+motor_left->run(RELEASE);
+
+motor_right->run(RELEASE);
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+  // Otherwise, the center sensor is above the threshold
+
+  // So we need to check what sensor is above the black line
+
+else {
+
+    // First check sensor 1
+
+if (adj_1<upper_threshold&& adj_5>upper_threshold){
+
+motor_left->run(RELEASE);
+
+motor_left->setSpeed(0);
+
+motor_right->run(FORWARD);
+
+motor_right->setSpeed(speed_value);
+
+    }
+
+ 
+
+    // Then check sensor 5
+
+else if (adj_1>upper_threshold&& adj_5<upper_threshold){
+
+motor_left->run(FORWARD);
+
+motor_left->setSpeed(speed_value);
+
+motor_right->run(RELEASE);
+
+motor_right->setSpeed(0);
+
+    }
+
+ 
+
+    // If not sensor 1 or 5, then check sensor 2
+
+else if (adj_2<upper_threshold&& adj_4>upper_threshold){
+
+motor_left->run(RELEASE);
+
+motor_left->setSpeed(0);
+
+motor_right->run(FORWARD);
+
+motor_right->setSpeed(speed_value);
+
+    }
+
+ 
+
+    // if not sensor 2, then check sensor 4
+
+else if (adj_2>upper_threshold&& adj_4<upper_threshold){
+
+motor_left->run(FORWARD);
+
+motor_left->setSpeed(speed_value);
+
+motor_right->run(RELEASE);
+
+motor_right->setSpeed(0);
+
+    }
+
+  }
+
+ 
+
+  ///// Print values for each sensor
+
+  ///// Sensor 1 values
+
+Serial.print("Sensor 1:  ");
+
+Serial.print(sensor1);
+
+Serial.print(" - ");
+
+ 
+
+Serial.print("Adj 1:  ");
+
+Serial.print(adj_1);
+
+Serial.print(" - ");
+
+ 
+
+  // Sensor 2 Values
+
+Serial.print("Sensor 2:  ");
+
+Serial.print(sensor2);
+
+Serial.print(" - ");
+
+ 
+
+Serial.print("Adj 2:  ");
+
+Serial.print(adj_2);
+
+Serial.print(" - ");
+
+ 
+
+  // Sensor 3 Values
+
+Serial.print("Sensor 3:  ");
+
+Serial.print(sensor3);
+
+Serial.print(" - ");
+
+ 
+
+Serial.print("Adj 3:  ");
+
+Serial.print(adj_3);
+
+Serial.print(" - ");
+
+ 
+
+  // Sensor 4 Values
+
+Serial.print("Sensor 4:  ");
+
+Serial.print(sensor4);
+
+Serial.print(" - ");
+
+ 
+
+Serial.print("Adj 4:  ");
+
+Serial.print(adj_4);
+
+Serial.print(" - ");
+
+ 
+
+  // Sensor 5 Values
+
+Serial.print("Sensor 5:  ");
+
+Serial.print(sensor5);
+
+Serial.print(" - ");
+
+ 
+
+Serial.print("Adj 5:  ");
+
+Serial.print(adj_5);
+
+Serial.print(" ");
+
+ 
+
+}
+
+ 
+
+// End of this code
