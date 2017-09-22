@@ -50,7 +50,7 @@ void loop(){
 //  {
 //    if((i%n)<(n/2))
 //    {
-//       Serial.println("Right");
+//       Serial.println("              Right");
 //       right(1);
 //    }  
 //    else
@@ -63,13 +63,13 @@ void loop(){
 //  {
      if((i%n)<(n/2))
     {
-       Serial.println("Right");
-       right(2);
+       Serial.println("           \tRight");
+       right(1);
     }  
     else
     {
       Serial.println("Left");
-      left(2);
+      left(1);
     }
 //  }
   
